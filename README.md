@@ -1,6 +1,6 @@
 # Securing Social Media Applications
 
-###### Michael McGuinness | 16322635 | Git Repo: https://github.com/DaVinciTachyon/EncryptWall
+###### Michael McGuinness | 16322635 | Git Repo: https://github.com/DaVinciTachyon/EncryptWall | Demo : https://youtu.be/XMerDEcikcM
 
 ### **Assignment Brief**
 The aim of this project is to develop a secure social media application for Facebook, Twitter, WhatsApp, etc., or for your own social networking app. For example, your application will secure the Facebook Wall, such that only people that are part of your “Secure Facebook Group” will be able to decrypt each other’s posts. To all other users of the system the post will appear as ciphertext.  
@@ -19,6 +19,8 @@ npm install
 npm start
 ```
 The website is then accessible through a browser at the address: `localhost:3000/`
+
+<div style="page-break-after: always;"></div>
 
 ### **Solution**
 I understood the task to require the creation of user accounts that can be members of groups. Each of the users has a wall which allows them to see all of the posts, however will decrypt only the ones that are directed to a group they are a member of. Users may be members of multiple groups.  

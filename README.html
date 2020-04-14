@@ -1,0 +1,153 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/2.10.0/github-markdown.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js">
+<link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+<link rel="stylesheet" href="https://gitcdn.xyz/repo/goessner/mdmath/master/css/texmath.css">
+<link rel="stylesheet" href="https://gitcdn.xyz/repo/goessner/mdmath/master/css/vscode-texmath.css">
+
+</head><body>
+<h1 id="securing-social-media-applications" data-line="0" class="code-line">Securing Social Media Applications</h1>
+<h6 id="michael-mcguinness--16322635--git-repo-httpsgithubcomdavincitachyonencryptwall--demo--httpsyoutubexmerdecikcm" data-line="2" class="code-line">Michael McGuinness | 16322635 | Git Repo: <a href="https://github.com/DaVinciTachyon/EncryptWall" data-href="https://github.com/DaVinciTachyon/EncryptWall">https://github.com/DaVinciTachyon/EncryptWall</a> | Demo : <a href="https://youtu.be/XMerDEcikcM" data-href="https://youtu.be/XMerDEcikcM">https://youtu.be/XMerDEcikcM</a></h6>
+<h3 id="assignment-brief" data-line="4" class="code-line"><strong>Assignment Brief</strong></h3>
+<p data-line="5" class="code-line">The aim of this project is to develop a secure social media application for Facebook, Twitter, WhatsApp, etc., or for your own social networking app. For example, your application will secure the Facebook Wall, such that only people that are part of your “Secure Facebook Group” will be able to decrypt each other’s posts. To all other users of the system the post will appear as ciphertext.<br>
+You are required to design and implement a suitable key management system for your application that allows any member of the group to share social media messages securely,and allows you to add or remove people from a group. You are free to implement your application for a desktop or mobile platform and make use of any open source cryptographic libraries.</p>
+<h3 id="how-to-use" data-line="8" class="code-line">How to Use</h3>
+<pre><code data-line="9" class="code-line"><code><div>git clone https://github.com/DaVinciTachyon/EncryptWall.git
+cd EncryptWall/
+sudo docker-compose up
+</div></code></code></pre>
+<p data-line="14" class="code-line">Then in another terminal, starting in the <code>EcryptWall/</code> directory.</p>
+<pre><code data-line="15" class="code-line"><code><div>cd frontend/
+npm install
+npm start
+</div></code></code></pre>
+<p data-line="20" class="code-line">The website is then accessible through a browser at the address: <code>localhost:3000/</code></p>
+<div style="page-break-after: always;"></div>
+<h3 id="solution" data-line="24" class="code-line"><strong>Solution</strong></h3>
+<p data-line="25" class="code-line">I understood the task to require the creation of user accounts that can be members of groups. Each of the users has a wall which allows them to see all of the posts, however will decrypt only the ones that are directed to a group they are a member of. Users may be members of multiple groups.<br>
+The solution is split into a front-end, a back-end and a database. This is for easy separation of the mechanics of the system, as well as for security reasons.<br>
+The front-end was built in React js, and it is a website which allows the users to interact with the application in a reasonable manner.<br>
+The back-end was built using Node js. It was built in an api format using the express framework. The reason for this is for ease of communication with the front-end, as well as the ability to expand to having multiple front-ends in the future.<br>
+The database was built using mongodb. This was mostly because of the ease of communication between a node server and mongodb. The liberty to use a nosql database was due to the database not needing to record transactions in a specific order and the relatively small size of the project.</p>
+<div style="page-break-after: always;"></div>
+<h3 id="front-end" data-line="33" class="code-line">Front End</h3>
+<p data-line="34" class="code-line">The front end is a website built in React js. It acts as an interface for the application.<br>
+The application is composed of 4 pages:</p>
+<ul>
+<li data-line="36" class="code-line">The registration page</li>
+<li data-line="37" class="code-line">The login page</li>
+<li data-line="38" class="code-line">The wall</li>
+<li data-line="39" class="code-line">The groups admin page</li>
+</ul>
+<h4 id="registration-page" data-line="41" class="code-line">Registration Page</h4>
+<p data-line="42" class="code-line">This page allows a user to register for the application. It is composed of a form which takes in a name, email and password. There is some basic validation in the front-end. Then if that validation is passed these pieces of information are sent to the back-end. It will also do some validation. If a requirement is failed, the front-end will get a message and display the reason for the failure, so that the user may correct it. If all of the values are correct, the registration will go through and the registration page will redirect to the login page.</p>
+<p data-line="44" class="code-line"><img src="images/Register.png" alt="Registration Page" class="loading" id="image-hash-aa4b5293d995ee28870f45dce5fd354ff60c9b76b3d727cfa1a21fc9a9f9d5bf"></p>
+<center>John Doe Registering</center>
+<div style="page-break-after: always;"></div>
+<h4 id="login-page" data-line="49" class="code-line">Login Page</h4>
+<p data-line="50" class="code-line">This page allows an existing user to access the application. It is composed of a form that accepts an email and password. There is some basic validation in the front-end. If the information is valid it is sent to the back-end. There the information has some more validation, if some of the validation is not passe, the message is returned and displayed in the front-end. If the validation is passed, the given email and password are checked against existing users. If one is not found, an error is returned, otherwise a json web token is returned which allows the user to use features that only exist if logged in.</p>
+<p data-line="52" class="code-line"><img src="images/Login.png" alt="Login Page" class="loading" id="image-hash-52d67f0f4f72738547699f7fcc8e9f52d07778da3b7982e4d6c841fe6c282ec2"></p>
+<center>John Doe Logging In</center>
+<div style="page-break-after: always;"></div>
+<h4 id="the-wall" data-line="57" class="code-line">The Wall</h4>
+<p data-line="58" class="code-line">This page has two functionalities:</p>
+<ul>
+<li data-line="59" class="code-line">making new posts</li>
+<li data-line="60" class="code-line">seeing previous posts</li>
+</ul>
+<p data-line="62" class="code-line"><img src="images/Wall.png" alt="The Wall" class="loading" id="image-hash-007542c895f8637fbdb0cff08a4a219d056d609890eac5b64b764a4a80ccb119"></p>
+<center>Jane Doe's Wall - she was added to the <i>My Friends</i> group</center>
+<h5 id="new-posts" data-line="65" class="code-line">New Posts</h5>
+<p data-line="66" class="code-line">At the top of the page there is a form. This form accepts a title, some content and a group to post for. There is some basic validation. If this validation is passed, the information is sent to the back-end where the post is stored.</p>
+<h5 id="past-posts" data-line="68" class="code-line">Past Posts</h5>
+<p data-line="69" class="code-line">Underneath the form, all of the previous posts on the platform are shown. By default the posts are shown as cyphertext, i.e. they are not decrypted, they are simply sent in their encrypted format. The other posts are posts from groups the user is a member of. These are decypted and shown to the user in plain text.</p>
+<div style="page-break-after: always;"></div>
+<h4 id="groups-admin-page" data-line="73" class="code-line">Groups Admin Page</h4>
+<p data-line="74" class="code-line">This page has two functionalities:</p>
+<ul>
+<li data-line="75" class="code-line">creating new groups</li>
+<li data-line="76" class="code-line">administration of current groups</li>
+</ul>
+<p data-line="78" class="code-line"><img src="images/Groups.png" alt="Groups Page" class="loading" id="image-hash-cd874350ae566d315a75f226089b4f5d02f879cc4ea809f5566479f1b797f875"></p>
+<center>John Doe's Groups</center>
+<h5 id="new-groups" data-line="81" class="code-line">New Groups</h5>
+<p data-line="82" class="code-line">At the top of the page there is a form which simply accepts a name. This name is sent to the back-end which creates the group and makes that user a member of the group.</p>
+<h5 id="current-groups" data-line="84" class="code-line">Current Groups</h5>
+<p data-line="85" class="code-line">Underneath the form, there is a set of cards, one for each group the user is a member of.<br>
+These cards allow administration of the groups in two ways. They allow the user to remove itself from the group. As well as add other users to the group by email.</p>
+<div style="page-break-after: always;"></div>
+<h3 id="back-end" data-line="90" class="code-line">Back End</h3>
+<p data-line="91" class="code-line">The back-end was built in Node js using the express framework, which allowed it to easily create an api for the front-end to connect to.<br>
+There were four main areas for it to take care of:</p>
+<ul>
+<li data-line="93" class="code-line">handling the database</li>
+<li data-line="94" class="code-line">authorisation of users</li>
+<li data-line="95" class="code-line">posts</li>
+<li data-line="96" class="code-line">groups</li>
+</ul>
+<h4 id="database" data-line="98" class="code-line">Database</h4>
+<p data-line="99" class="code-line">There were two main parts to connecting to the database. These were:</p>
+<ul>
+<li data-line="100" class="code-line">creating the database</li>
+<li data-line="101" class="code-line">connecting to the database</li>
+</ul>
+<p data-line="103" class="code-line">In order to achieve these two goals a few tools were used.<br>
+The first tool was <code>docker</code>. A docker file was created for the node server. This was then imported into a docker-compose file. This was used to create an easy way to connect the server and the database. This also creates a database if it does not exist. It also makes development and deployment a lot easier.<br>
+The second tool used was a library for node, <code>mongoose</code>. It allows for ease use of a mongo database in node.</p>
+<h4 id="authorisation" data-line="107" class="code-line">Authorisation</h4>
+<p data-line="108" class="code-line">Authorisation has 3 parts:</p>
+<ul>
+<li data-line="109" class="code-line">Registration</li>
+<li data-line="110" class="code-line">Logging In</li>
+<li data-line="111" class="code-line">Token Verification</li>
+</ul>
+<p data-line="113" class="code-line">For registration and logging in two routes were created.</p>
+<h5 id="authregister" data-line="115" class="code-line"><code>/auth/register</code></h5>
+<p data-line="116" class="code-line">This route needs to be contacted through a post request.<br>
+A validator was written for the values than need to be in the body of the request using <code>@hapi/joi</code>. This allows the information to be verified as fitting the right format before it is even processed. It also helps create errors which can be sent to the requester. Then the given email is run against the database to check if it already exists. If it does not exist, the password is encrypted with a randomly generated salt in one way encryption using the library <code>bcryptjs</code>. This makes it so that the password cannot be decrypted, or it is at least very hard. The new user's name, email and hashed password are then added to the database using the User model.</p>
+<div style="page-break-after: always;"></div>
+<h5 id="authlogin" data-line="121" class="code-line"><code>/auth/login</code></h5>
+<p data-line="122" class="code-line">This route needs to be contacted through a post request.<br>
+A validator was written for the values than need to be in the body of the request using <code>@hapi/joi</code>. This allows the information to be verified as fitting the right format before it is even processed. It also helps create errors which can be sent to the requester. Then the email is looked for in the database. If it is found, the unhashed password given in the post request is compared to the hashed password found in the database using the <code>bcrypt.compare()</code> function. If this comparison is successful, a json web token is created which contains the user id, using the <code>TOKEN_SECRET</code> found in the .env file. This is sent to the requester in order to confirm a successful login, and to allow them to use the token to access routes which need verification.</p>
+<h5 id="token-verification" data-line="125" class="code-line">Token Verification</h5>
+<p data-line="126" class="code-line">In order for the service to actually be secure, routes need to be accessible only by logged in members. For this purpose, a middleware was created to verify that the token is valid.<br>
+This middleware starts by checking that the token is contained in the request header. If it is the token is verfied using the <code>jwt.verify()</code> function, which processes the token alongside the <code>TOKEN_SECRET</code>. If this is successful a new parameter for the request is updated, <code>req.user</code>, with the user id and few othe pieces of information. Then the function <code>next()</code> is used to move onto the actual route processing.</p>
+<h4 id="posts" data-line="129" class="code-line">Posts</h4>
+<p data-line="130" class="code-line">In order to handle posts, 2 routes are created. All of these routes require token verification.</p>
+<h5 id="post" data-line="132" class="code-line"><code>/post</code></h5>
+<p data-line="133" class="code-line">This route is used to add a new post. This endpoint is contacted using a post request. It uses the secret key for the group it posted for to encrypt the title and content. The encypted post is then save to the database.</p>
+<h5 id="posts-1" data-line="135" class="code-line"><code>/posts</code></h5>
+<p data-line="136" class="code-line">This route is used to get all of the posts. This endpoint is contacted using a get request. The way it works is that it gets all of the posts from the database. It then decrypts the posts written for groups the requester is a member of using the appropriate keys, and send them to the requester.</p>
+<div style="page-break-after: always;"></div>
+<h4 id="groups" data-line="140" class="code-line">Groups</h4>
+<p data-line="141" class="code-line">In order to handle groups, 4 routes are created. All of these routes require token verification.</p>
+<h5 id="mygroups" data-line="143" class="code-line"><code>/myGroups</code></h5>
+<p data-line="144" class="code-line">This route is used get all of the groups a user is a member of. This endpoint is contacted using a get request. The set of ids of the groups the user is a member of, is used to get the groups names, and all of that information is returned to the requester.</p>
+<h5 id="mygroupsadd" data-line="146" class="code-line"><code>/myGroups/add</code></h5>
+<p data-line="147" class="code-line">This route is used to add another user to a group. This endpoint is contacted using a post request. The body contains a group id and an email. The group id is added to the list of groups the user with the given email is a member of, if one if found.</p>
+<h5 id="mygroupsremove" data-line="149" class="code-line"><code>/myGroups/remove</code></h5>
+<p data-line="150" class="code-line">This route is for a user to remove themselves from a group. This endpoint is contacted using a post request. The request body contains a group id. This is used to remove this id from the list of groups the user is a member of.</p>
+<h5 id="group" data-line="152" class="code-line"><code>/group</code></h5>
+<p data-line="153" class="code-line">This route is used to create a new group. This endpoint is contacted using a post request. The request body contains a group name. A secret is created for the group by generating a random alphanumeric string 32 characters long, this is encrypted using the <code>POST_SECRET</code> in the .env file. The Group model is used in order to add the group to the database. The requester's user id is then used to add the group to the groups they are a member of.</p>
+<div style="page-break-after: always;"></div>
+<h3 id="encryption-and-key-management" data-line="157" class="code-line">Encryption and Key Management</h3>
+<p data-line="159" class="code-line">Security within the application involves a few steps.</p>
+<ol>
+<li data-line="160" class="code-line">The traffic between the front-end and back-end would be encrypted using https traffic.</li>
+<li data-line="161" class="code-line">In order to access the endpoints which may give out sensitive information the requester needs a json web token which is processed using the <code>TOKEN_SECRET</code>, making it very secure and hard to fake.</li>
+<li data-line="162" class="code-line">The back-end has a <code>POST_SECRET</code> stored in the .env file. This is used to encrypt the key for each group in the database, which allows extra security in the case where an attacker manages to get access to the database. This stops them from simply using the stored keys to decrypt posts.</li>
+<li data-line="163" class="code-line">Each group has a different key which is used to encrypt the posts for that group.</li>
+</ol>
+<p data-line="165" class="code-line">As stated above, one way encryption is achieved using the <code>bcryptjs</code> library. This uses the inbuilt <code>crypto</code> library and uses its randomBytes interface is used to obtain secure random numbers to aid the encryption.<br>
+Two way encryption is achieved using the <code>cryptr</code> library. This library uses the <em>aes-256-gcm</em> algorithm to encrypt and decrypt <em>UTF-8</em> strings. The salt and iv are randomly generated and prepended to the result. The library is used by passing a secret in order to create the class, <code>Cryptr(secret)</code>, then <code>cryptr.encrypt()</code> and <code>cryptr.decrypt()</code> can be called.</p>
+<h3 id="potential-improvements" data-line="168" class="code-line">Potential Improvements</h3>
+<p data-line="169" class="code-line">There are a few improvements I may have implemented given the time.</p>
+<ol>
+<li data-line="170" class="code-line">Improving validation would prevent many issues and attacks. Making it more thorough and making sure that no invalid information can get passed.</li>
+<li data-line="171" class="code-line">Taking more control of the encryption. Researching the best algorithms for the jobs they need to fulfill.</li>
+<li data-line="172" class="code-line">Using public and private key algorithms in order to make he application more secure. This would complicate the execution of the application as well as potentially change how it would be used.</li>
+<li data-line="173" class="code-line">Store less information in the database.</li>
+<li data-line="174" class="code-line">Making the server as simply a way to make the service more reliable rather than being used to store information would be a way to make the information more secure.</li>
+</ol>
+
+</body></html>
