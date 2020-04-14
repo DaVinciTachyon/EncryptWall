@@ -15,6 +15,7 @@ sudo docker-compose up
 Then in another terminal, starting in the `EcryptWall/` directory.
 ```
 cd frontend/
+npm install
 npm start
 ```
 The website is then accessible through a browser at the address: `localhost:3000/`
